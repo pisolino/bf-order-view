@@ -1,0 +1,30 @@
+<html>
+  <head>
+    <title>bf tradeing helper</title>
+  </head>
+  <body>
+    <div id="buttons">
+      <button v-on:click="balance">Balance</button>
+      <button v-on:click="collateral">Collateral</button>
+    </div>
+    <p>
+      <span id="ltp-price">最終取引価格: {{price}}</span>
+    </p>
+    <input type="text" id="low-price" v-model="price">
+    <span id="diff-price">← {{price}} →</span>
+    <input type="text" id="high-price" v-model="price">
+    <ul id="collateral">
+      <li>評価額: {{collateral}}円</li>
+      <li>評価損益: {{open_position_pnl}}円</li>
+      <li>必要証拠金: {{require_collateral}}円</li>
+      <li>証拠金維持率: {{keep_rate}}%</li>
+    </ul>
+    <ul id="execution">
+      <li v-for="execution in executions">
+        {{execution.side}} {{execution.price}} {{execution.size}} {{execution.execDate}}
+      </li>
+    </ul>
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+    <script src="./bundle.js"></script>
+  </body>
+</html>
