@@ -23,6 +23,7 @@
     "nightmare": "^2.10.0",
     "pubnub": "^4.19.0",
     "q": "^1.5.1",
+    "request": "^2.83.0",
     "socket.io": "^2.0.4"
   },
   "devDependencies": {
