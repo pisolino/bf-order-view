@@ -30,8 +30,8 @@ app.get('/status', (req, res) => {
 });
 
 app.get('/balance', (req, res) => {
-  status.getBalance().then((message) => {
-    res.type('text').end(`${message.join('\n')}\n`);
+  status.getBalance().then((data) => {
+    res.json(data);
   });
 });
 

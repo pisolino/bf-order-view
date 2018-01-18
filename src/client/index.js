@@ -44,7 +44,10 @@ const getBalance = () => {
     transformResponse
   };
 
-  return axios(options);
+  axios(options).then((res) => {
+    const { data } = res;
+    console.log(data);
+  });
 };
 
 const getCollateral = () => {
