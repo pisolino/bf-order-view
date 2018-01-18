@@ -4,6 +4,8 @@ import moment from 'moment-timezone';
 import q from 'q';
 import querystring from 'querystring';
 
+//TODO: 辞書ファイル or フロントへ移動
+
 const MARKET = {
   HEALTH: {
     'NORMAL': '正常稼働中',

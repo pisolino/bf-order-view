@@ -23,10 +23,6 @@ app.get('/board', (req, res) => {
   res.type('text').end(`${JSON.stringify(shared.boardData)}\n`);
 });
 
-app.get('/executions', (req, res) => {
-  res.type('text').end(`${JSON.stringify(market.generateOrderedExecutions())}\n`);
-});
-
 app.get('/status', (req, res) => {
   market.getBoardState().then((message) => {
     res.type('text').end(`${message.join('\n')}\n`);

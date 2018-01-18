@@ -7,6 +7,8 @@ import q from 'q';
 import moment from 'moment-timezone';
 
 
+//TODO: 辞書ファイル or フロントへ移動
+
 const MARKET = {
   HEALTH: {
     'NORMAL': '正常稼働中',
@@ -43,12 +45,8 @@ const getBoard = () => {
   const message = [];
   apiRequest('GET', `getboard?product_code=${API_PARAMS.PRODUCT_CODE}`, '', (err, response, payload) => {
     const res = JSON.parse(payload);
-    // console.log(res);
-    console.log(res.mid_price);
     const bidsPower = _(res.bids).orderBy('price', 'desc').value();
     const asksPower = _(res.asks).orderBy('price', 'asc').value();
-    console.log(`Bids Power: ${_.sumBy(bidsPower, 'size')}`);
-    console.log(`Asks Power: ${_.sumBy(asksPower, 'size')}`);
     message.push(`Bids Power: ${_.sumBy(bidsPower, 'size')}`);
     message.push(`Asks Power: ${_.sumBy(asksPower, 'size')}`);
     shared.boardData = res;
@@ -61,36 +59,11 @@ const getBoard = () => {
 };
 
 const subscribeRealtimeApis = () => {
+  console.log('pubnub subscribe RealtimeAPI');
   pubnub.addListener({
     message: (msg) => {
-      if (msg.channel === 'lightning_board_FX_BTC_JPY') {
-        // const { mid_price, asks, bids } = msg.message;
-        // shared.boardData.mid_price = mid_price;
-        // _.forEach(asks, (ask) => {
-        //   const currentPrice = _.find(shared.boardData.asks, { price: ask.price });
-        //   if (currentPrice) {
-        //     currentPrice.size = ask.size;
-        //   } else {
-        //     _.assignIn(shared.boardData.asks, ask);
-        //   }
-        // });
-        // _.forEach(bids, (bid) => {
-        //   const currentPrice = _.find(shared.boardData.bids, { price: bid.price });
-        //   if (currentPrice) {
-        //     currentPrice.size = bid.size;
-        //   } else {
-        //     _.assignIn(shared.boardData.bids, bid);
-        //   }
-        // });
-      } else if (msg.channel === 'lightning_executions_FX_BTC_JPY') {
-        const rawShared = {
-          buy: [],
-          sell: []
-        };
-
-
+      if (msg.channel === 'lightning_executions_FX_BTC_JPY') {
         const executions = _.transform(msg.message, (result, m) => {
-          // m.sideは'BUY', 'SELL'が大文字で格納されるため変換
           result.unshift({
             side: m.side,
             price: m.price,
@@ -99,37 +72,14 @@ const subscribeRealtimeApis = () => {
           });
         }, []);
         shared.io.emit('executions', { executions });
-
-        _.forEach(msg.message, (m) => {
-          // m.sideは'BUY', 'SELL'が大文字で格納されるため変換
-          shared.executions[_.toLower(m.side)].unshift({
-            side: m.side,
-            price: m.price,
-            size: m.size,
-            execDate: moment(m.exec_date).tz('Asia/Tokyo').format('YYYY/MM/DD HH:mm:ss')
-          });
-        });
-        //直近180件格納（件数は適当）
-        shared.executions.buy = _.slice(shared.executions.buy, 0, 60 * 3);
-        shared.executions.sell = _.slice(shared.executions.sell, 0, 60 * 3);
       } else if (msg.channel === 'lightning_ticker_FX_BTC_JPY') {
         shared.io.emit('ltp', { ltp: msg.message.ltp });
       }
     }
   });
   pubnub.subscribe({
-    channels: ['lightning_board_FX_BTC_JPY', 'lightning_executions_FX_BTC_JPY', 'lightning_ticker_FX_BTC_JPY']
+    channels: ['lightning_executions_FX_BTC_JPY', 'lightning_ticker_FX_BTC_JPY']
   });
-};
-
-const generateOrderedExecutions = () => {
-  const orderedExecutions = {
-    buy: [],
-    sell: []
-  };
-  orderedExecutions.buy = _(shared.executions.buy).groupBy('price').value();
-  orderedExecutions.sell = _(shared.executions.sell).groupBy('price').value();
-  return orderedExecutions;
 };
 
 const getBoardState = () => {
@@ -153,6 +103,5 @@ getBoard();
 
 export const market = {
   getBoard,
-  getBoardState,
-  generateOrderedExecutions
+  getBoardState
 };
