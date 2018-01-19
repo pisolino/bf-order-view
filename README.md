@@ -8,6 +8,8 @@ custom order view for bf - WIP
 まだ色々造りかけのため注文機能周りは画面から叩けません。  
 あくまで技術的な実験のために作っているため、本プログラム利用によって生じた損害等につきましては作成者は一切関知いたしません。
 
+<kbd><img width="661" alt="2018-01-18 16 55 10" src="https://user-images.githubusercontent.com/1404329/35132669-b1dad64c-fd0f-11e7-9adb-06fb424bc282.png"></kbd>
+
 ## dependencies
 node.js  
 express  
